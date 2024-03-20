@@ -405,7 +405,8 @@ extern MPSolverInterface* BuildCplexInterface(bool mip, MPSolver* const solver);
 #endif
 extern MPSolverInterface* BuildXpressInterface(bool mip,
                                                MPSolver* const solver);
-
+extern MPSolverInterface* BuildKnitroInterface(bool mip,
+                                               MPSolver* const solver);
 namespace {
 MPSolverInterface* BuildSolverInterface(MPSolver* const solver) {
   DCHECK(solver != nullptr);
@@ -462,6 +463,10 @@ MPSolverInterface* BuildSolverInterface(MPSolver* const solver) {
       return BuildXpressInterface(true, solver);
     case MPSolver::XPRESS_LINEAR_PROGRAMMING:
       return BuildXpressInterface(false, solver);
+    case MPSolver::KNITRO_MIXED_INTEGER_PROGRAMMING:
+      return BuildKnitroInterface(true, solver);
+    case MPSolver::KNITRO_LINEAR_PROGRAMMING:
+      return BuildKnitroInterface(false, solver);
     default:
       // TODO(user): Revert to the best *available* interface.
       LOG(FATAL) << "Linear solver not recognized.";
@@ -498,6 +503,7 @@ MPSolver::~MPSolver() { Clear(); }
 
 extern bool GurobiIsCorrectlyInstalled();
 extern bool XpressIsCorrectlyInstalled();
+extern bool KnitroIsCorrectlyInstalled();
 
 // static
 bool MPSolver::SupportsProblemType(OptimizationProblemType problem_type) {
@@ -546,6 +552,10 @@ bool MPSolver::SupportsProblemType(OptimizationProblemType problem_type) {
       problem_type == XPRESS_LINEAR_PROGRAMMING) {
     return XpressIsCorrectlyInstalled();
   }
+  if (problem_type == KNITRO_MIXED_INTEGER_PROGRAMMING ||
+      problem_type == KNITRO_LINEAR_PROGRAMMING) {
+    return KnitroIsCorrectlyInstalled();
+  }
 
   return false;
 }
@@ -584,6 +594,8 @@ constexpr
         {MPSolver::KNAPSACK_MIXED_INTEGER_PROGRAMMING, "knapsack"},
         {MPSolver::CPLEX_MIXED_INTEGER_PROGRAMMING, "cplex"},
         {MPSolver::XPRESS_MIXED_INTEGER_PROGRAMMING, "xpress"},
+        {MPSolver::KNITRO_LINEAR_PROGRAMMING, "knitro_lp"},
+        {MPSolver::KNITRO_MIXED_INTEGER_PROGRAMMING, "knitro"},
 };
 // static
 bool MPSolver::ParseSolverType(absl::string_view solver_id,
