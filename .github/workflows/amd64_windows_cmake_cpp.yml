@@ -17,7 +17,11 @@ jobs:
     name: Windows • ${{ matrix.cmake.generator }} • C++
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Knitro Windows
+        uses: actions/checkout@v4
+        with:
+          repository: loicli/Knitro-Distrib-Windows
+          path: ${{ env.KNITRODIR }}
       - name: Check cmake
         run: |
           cmake --version
