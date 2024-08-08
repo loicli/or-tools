@@ -17,10 +17,12 @@ jobs:
     name: Windows • ${{ matrix.cmake.generator }} • C++
     runs-on: windows-latest
     steps:
+      - name: Checkout or-tools
+        uses: actions/checkout@v4
       - name: Checkout Knitro Windows
         uses: actions/checkout@v4
         with:
-          repository: loicli/powsybl-open-rao
+          repository: loicli/Knitro-Distrib-Windows
           path: ${{ env.KNITRODIR }}
           ref: main
           token: ${{ secrets.KNITRO_DISTRIB }}
