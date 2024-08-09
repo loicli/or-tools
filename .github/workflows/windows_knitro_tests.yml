@@ -1,5 +1,5 @@
 # ref: https://github.com/actions/runner-images
-name: amd64 Windows CMake C++
+name: Windows knitro tests
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -47,22 +47,12 @@ jobs:
           -DBUILD_DEPS=ON
           -DUSE_KNITRO=ON
           -DBUILD_TESTING=ON
-          -DCMAKE_INSTALL_PREFIX=install
       - name: Build
         run: >
           cmake --build build
           --config ${{ matrix.cmake.config }}
           --target ${{ matrix.cmake.build_target }}
           -v -j2
-      - name: Test
+      - name: Run Knitr Test
         run: >
-          cmake --build build
-          --config ${{ matrix.cmake.config }}
-          --target ${{ matrix.cmake.test_target }}
-          -v
-      - name: Install
-        run: >
-          cmake --build build
-          --config ${{ matrix.cmake.config }}
-          --target ${{ matrix.cmake.install_target }}
-          -v
+          ./build/RELEASE/bin/test_knitro_interface
