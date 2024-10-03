@@ -1500,34 +1500,6 @@ TEST(KnitroInterface, RandomLP) {
 //   // Create a LP problem with Knitro solver
 //   UNITTEST_INIT_MIP();
 
-<<<<<<< HEAD
-  double infinity = solver.infinity();
-  const int nb_var = 30;
-  std::vector<MPVariable*> vars;
-  for (int i = 0; i < nb_var; i++)
-    vars.push_back(solver.MakeIntVar(-rand() % 1000, rand() % 1000,
-                                     "x_" + std::to_string(i)));
-  std::vector<MPConstraint*> cons;
-  for (int j = 0; j < nb_var; j++) {
-    cons.push_back(solver.MakeRowConstraint(-infinity, rand() % 2001 - 1000,
-                                            "c_" + std::to_string(j)));
-    for (int i = 0; i <= j; i++) {
-      cons.back()->SetCoefficient(
-          vars[i], (i == j) ? rand() % 100 + 1 : rand() % 199 - 99);
-    }
-  }
-  MPObjective* const objective = solver.MutableObjective();
-  for (int i = 0; i < nb_var; i++) {
-    objective->SetCoefficient(vars[i], rand() % 199 - 99);
-  }
-  objective->SetMaximization();
-  solver.SetSolverSpecificParametersAsString("KN_PARAM_OPTTOL 0");
-  time_t start_time;
-  time(&start_time);
-  MPSolver::ResultStatus kc_status = solver.Solve();
-  printf("KNITRO solving time = %ld\n", time(NULL) - start_time);
-  write_readible_problem_model(solver, "mip_problem_knitro.mps");
-=======
 //   double infinity = solver.infinity();
 //   const int nb_var = 30;
 //   std::vector<MPVariable*> vars;
@@ -1553,7 +1525,6 @@ TEST(KnitroInterface, RandomLP) {
 //   MPSolver::ResultStatus kc_status = solver.Solve();
 //   printf("KNITRO solving time = %ld\n", time(NULL) - start_time);
 //   write_readible_problem_model(solver, "mip_problem_knitro.mps");
->>>>>>> cicd
 
 //   // Create the same problem with SCIP solver
 //   MPSolver solverbis("SCIP_MIP", MPSolver::SCIP_MIXED_INTEGER_PROGRAMMING);
