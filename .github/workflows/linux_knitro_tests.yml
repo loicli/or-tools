@@ -1,5 +1,5 @@
 # ref: https://github.com/actions/runner-images
-name: amd64 Linux CMake C++
+name: Linux Knitro Test
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -18,7 +18,7 @@ jobs:
            {generator: "Ninja Multi-Config", config: "Release"},
          ]
        fail-fast: false
-    name: Linux • ${{ matrix.cmake.generator }} • C++
+    name: Linux • Knitro Test • C++
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,16 +70,9 @@ jobs:
           --config ${{ matrix.cmake.config }}
           --target all
           -v -j2
-      - name: Test
+      - name: check build
+        run: |
+          ls build/bin
+      - name: Run Knitro Test
         run: >
-          CTEST_OUTPUT_ON_FAILURE=1
-          cmake --build build
-          --config ${{ matrix.cmake.config }}
-          --target test
-          -v
-      - name: Install
-        run: >
-          cmake --build build
-          --config ${{ matrix.cmake.config }}
-          --target install
-          -v
+          ./build/bin/test_knitro_interface

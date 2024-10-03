@@ -1,5 +1,5 @@
 # ref: https://github.com/actions/runner-images
-name: amd64 Windows CMake C++
+name: Windows knitro tests
 
 on: [push, pull_request, workflow_dispatch]
 
@@ -16,7 +16,7 @@ jobs:
           {generator: "Visual Studio 17 2022", config: Release, build_target: ALL_BUILD, test_target: RUN_TESTS, install_target: INSTALL},
         ]
       fail-fast: false
-    name: Windows • ${{ matrix.cmake.generator }} • C++
+    name: Windows • Knitro Test • C++
     runs-on: windows-latest
     steps:
       - name: Checkout or-tools
@@ -48,7 +48,7 @@ jobs:
           ls -l ${{ env.KNITRODIR }}
           ls -l ${{ env.KNITRODIR }}/knitroampl/
           ls -l ${{ env.KNITRODIR }}/knitromatlab/
-          ls -l ${{ env.KNITRODIR }}/lib/      
+          ls -l ${{ env.KNITRODIR }}/lib/
       - name: Check cmake
         run: |
           cmake --version
@@ -61,22 +61,12 @@ jobs:
           -DBUILD_DEPS=ON
           -DUSE_KNITRO=ON
           -DBUILD_TESTING=ON
-          -DCMAKE_INSTALL_PREFIX=install
       - name: Build
         run: >
           cmake --build build
           --config ${{ matrix.cmake.config }}
           --target ${{ matrix.cmake.build_target }}
           -v -j2
-      - name: Test
+      - name: Run Knitro Test
         run: >
-          cmake --build build
-          --config ${{ matrix.cmake.config }}
-          --target ${{ matrix.cmake.test_target }}
-          -v
-      - name: Install
-        run: >
-          cmake --build build
-          --config ${{ matrix.cmake.config }}
-          --target ${{ matrix.cmake.install_target }}
-          -v
+          ./build/RELEASE/bin/test_knitro_interface

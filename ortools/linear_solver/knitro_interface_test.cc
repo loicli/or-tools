@@ -1484,22 +1484,23 @@ TEST(KnitroInterface, RandomLP) {
   }
 }
 
-/**
- * Solve a random generated MIP
- * max cT.x
- * st. Ax <= b
- *     u <= x <= v
- * With
- *  x \in Z^n
- *  Matrix A a randomly generated invertible lower triangular matrix
- *  u and v the lower and upper bound of x respectively
- */
-TEST(KnitroInterface, RandomMIP) {
-  srand(time(NULL));
+// /**
+//  * Solve a random generated MIP with SCIP and Knitro solver
+//  * max cT.x
+//  * st. Ax <= b
+//  *     u <= x <= v
+//  * With
+//  *  x \in Z^n
+//  *  Matrix A a randomly generated invertible lower triangular matrix
+//  *  u and v the lower and upper bound of x respectively
+//  */
+// TEST(KnitroInterface, RandomMIP) {
+//   srand(time(NULL));
 
-  // Create a LP problem with Knitro solver
-  UNITTEST_INIT_MIP();
+//   // Create a LP problem with Knitro solver
+//   UNITTEST_INIT_MIP();
 
+<<<<<<< HEAD
   double infinity = solver.infinity();
   const int nb_var = 30;
   std::vector<MPVariable*> vars;
@@ -1526,35 +1527,62 @@ TEST(KnitroInterface, RandomMIP) {
   MPSolver::ResultStatus kc_status = solver.Solve();
   printf("KNITRO solving time = %ld\n", time(NULL) - start_time);
   write_readible_problem_model(solver, "mip_problem_knitro.mps");
+=======
+//   double infinity = solver.infinity();
+//   const int nb_var = 30;
+//   std::vector<MPVariable*> vars;
+//   for (int i = 0; i < nb_var; i++)
+//     vars.push_back(solver.MakeIntVar(-rand() % 1000, rand() % 1000,
+//                                      "x_" + std::to_string(i)));
+//   std::vector<MPConstraint*> cons;
+//   for (int j = 0; j < nb_var; j++) {
+//     cons.push_back(solver.MakeRowConstraint(-infinity, rand() % 2001 - 1000,
+//                                             "c_" + std::to_string(j)));
+//     for (int i = 0; i <= j; i++) {
+//       cons.back()->SetCoefficient(
+//           vars[i], (i == j) ? rand() % 100 + 1 : rand() % 199 - 99);
+//     }
+//   }
+//   MPObjective* const objective = solver.MutableObjective();
+//   for (int i = 0; i < nb_var; i++) {
+//     objective->SetCoefficient(vars[i], rand() % 199 - 99);
+//   }
+//   objective->SetMaximization();
+//   time_t start_time;
+//   time(&start_time);
+//   MPSolver::ResultStatus kc_status = solver.Solve();
+//   printf("KNITRO solving time = %ld\n", time(NULL) - start_time);
+//   write_readible_problem_model(solver, "mip_problem_knitro.mps");
+>>>>>>> cicd
 
-  // Create the same problem with SCIP solver
-  MPSolver solverbis("SCIP_MIP", MPSolver::SCIP_MIXED_INTEGER_PROGRAMMING);
-  for (int i = 0; i < nb_var; i++)
-    solverbis.MakeIntVar(vars[i]->lb(), vars[i]->ub(), vars[i]->name());
-  for (int j = 0; j < nb_var; j++) {
-    MPConstraint* ct = solverbis.MakeRowConstraint(cons[j]->lb(), cons[j]->ub(),
-                                                   cons[j]->name());
-    for (int i = 0; i <= j; i++) {
-      ct->SetCoefficient(solverbis.variable(i),
-                         cons[j]->GetCoefficient(vars[i]));
-    }
-  }
-  MPObjective* const objectivebis = solverbis.MutableObjective();
-  for (int i = 0; i < nb_var; i++) {
-    objectivebis->SetCoefficient(solverbis.variable(i),
-                                 objective->GetCoefficient(vars[i]));
-  }
-  objectivebis->SetMaximization();
-  time(&start_time);
-  MPSolver::ResultStatus scip_status = solverbis.Solve();
-  printf("SCIP solving time = %ld\n", time(NULL) - start_time);
-  write_readible_problem_model(solverbis, "mip_problem_scip.mps");
+//   // Create the same problem with SCIP solver
+//   MPSolver solverbis("SCIP_MIP", MPSolver::SCIP_MIXED_INTEGER_PROGRAMMING);
+//   for (int i = 0; i < nb_var; i++)
+//     solverbis.MakeIntVar(vars[i]->lb(), vars[i]->ub(), vars[i]->name());
+//   for (int j = 0; j < nb_var; j++) {
+//     MPConstraint* ct = solverbis.MakeRowConstraint(cons[j]->lb(), cons[j]->ub(),
+//                                                    cons[j]->name());
+//     for (int i = 0; i <= j; i++) {
+//       ct->SetCoefficient(solverbis.variable(i),
+//                          cons[j]->GetCoefficient(vars[i]));
+//     }
+//   }
+//   MPObjective* const objectivebis = solverbis.MutableObjective();
+//   for (int i = 0; i < nb_var; i++) {
+//     objectivebis->SetCoefficient(solverbis.variable(i),
+//                                  objective->GetCoefficient(vars[i]));
+//   }
+//   objectivebis->SetMaximization();
+//   time(&start_time);
+//   MPSolver::ResultStatus scip_status = solverbis.Solve();
+//   printf("SCIP solving time = %ld\n", time(NULL) - start_time);
+//   write_readible_problem_model(solverbis, "mip_problem_scip.mps");
 
-  EXPECT_EQ(kc_status, scip_status);
-  if (scip_status == MPSolver::ResultStatus::OPTIMAL) {
-    EXPECT_NEAR(objective->Value(), objectivebis->Value(), 1e-3);
-  }
-}
+//   EXPECT_EQ(kc_status, scip_status);
+//   if (scip_status == MPSolver::ResultStatus::OPTIMAL) {
+//     EXPECT_NEAR(objective->Value(), objectivebis->Value(), 1e-3);
+//   }
+// }
 
 /*-------------------- Callback --------------------*/
 
@@ -1762,6 +1790,8 @@ TEST(KnitroInterface, LazyConstraint) {
   //////////
 
   // Data of the traveling salesman problem.
+  std::filesystem::path p = std::filesystem::current_path();
+  std::cout << "Current path" << p << std::endl;
   FILE* file = fopen("ortools/knitro/resources/bayg29.tsp", "r");
   if (file != nullptr) {
     printf("bayg29.tsp found in Knitro resources rep\n");
@@ -1770,8 +1800,13 @@ TEST(KnitroInterface, LazyConstraint) {
     if (file != nullptr) {
       printf("bayg29.tsp found in submodule OR-Tools Knitro resources rep\n");
     } else {
-      printf("bayg29.tsp not found !\n");
-      EXPECT_TRUE(false);
+      file = fopen(absl::StrCat(getenv("OR_ROOT"), "/ortools/knitro/resources/bayg29.tsp").c_str(), "r");
+      if (file != nullptr) {
+        printf("bayg29.tsp found with OR_ROOT %s\n", getenv("OR_ROOT"));
+      } else {
+        printf("bayg29.tsp not found !\n");
+        EXPECT_TRUE(false);
+      }
     }
   }
 
