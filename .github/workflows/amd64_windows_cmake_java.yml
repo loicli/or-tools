@@ -46,7 +46,7 @@ jobs:
           cmake --build build
           --config ${{ matrix.cmake.config }}
           --target ${{ matrix.cmake.test_target }}
-          -v
+          -v --rerun-failed --output-on-failure
       - name: Install
         run: >
           cmake --build build
